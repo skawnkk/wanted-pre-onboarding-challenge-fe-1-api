@@ -1,0 +1,64 @@
+import { isLogin } from '../utils/auth';
+import { useRouter } from 'next/router';
+import { useEffect } from 'react';
+import TodoList from '../components/TodoList';
+import CreateTodoForm from '../components/CreateTodoForm';
+import { useRecoilState } from 'recoil';
+import { detailState } from '../recoil/atoms/state';
+import { useDelete } from '../react-query/useDelete';
+import useGet from '../react-query/useGet';
+import EditTodoForm from '../components/EditTodoForm';
+import Title from '../components/Title';
+import Button from '../atomic/Button';
+import dayjs from 'dayjs';
+import styles from '../styles/Home.module.css';
+
+export default function TodoDetail() {
+  const router = useRouter();
+  const id = router.query.id as string;
+  const todo = useGet({ id, onError: () => router.push('/') });
+
+  const [state, setState] = useRecoilState(detailState);
+  const { deleteTodo } = useDelete({ onError: () => router.push('/') });
+
+  const handleEditClick = () => setState('edit');
+  const handleDeleteClick = () => {
+    deleteTodo(id);
+    router.push('/');
+  };
+
+  useEffect(() => {
+    if (!isLogin()) {
+      router.push('/auth');
+      return;
+    }
+  }, []);
+
+  return (
+    <div className={styles.main}>
+      <Title />
+      {todo.id && state === 'read' && (
+        <div className="m-5">
+          <div className={'flex flex-row-reverse'}>마지막 수정일: {dayjs(todo.updatedAt).format('YYYY/MM/DD')}</div>
+
+          <div className={'block font-bold w-full h-12 p-3 rounded-lg'}>{todo.title}</div>
+          <div className={'block w-full h-12 mt-3 p-3 rounded-lg'}>{todo.content}</div>
+          <div className="flex gap-2">
+            <Button className={'btn-slate-600'} onClick={handleEditClick}>
+              수정하기
+            </Button>
+            <Button className={'btn-default'} onClick={handleDeleteClick}>
+              삭제하기
+            </Button>
+          </div>
+        </div>
+      )}
+
+      {todo.id && state === 'edit' && <EditTodoForm todo={todo} />}
+
+      <TodoList />
+
+      {state === 'read' && <CreateTodoForm />}
+    </div>
+  );
+}
