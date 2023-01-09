@@ -57,7 +57,13 @@ function Login() {
         <div className={'mb-1'}>Login</div>
         <form onSubmit={handleLogin}>
           <input className="block w-full h-12 px-3 rounded-lg" value={loginEmail} onChange={onChangeLoginEmail} placeholder="이메일 주소"></input>
-          <input className="block w-full mt-3 p-3 rounded-lg" value={loginPassword} onChange={onChangeLoginPassword} placeholder="비밀번호"></input>
+          <input
+            className="block w-full mt-3 p-3 rounded-lg"
+            type="password"
+            value={loginPassword}
+            onChange={onChangeLoginPassword}
+            placeholder="비밀번호"
+          ></input>
           <button className="btn-default" type="submit">
             Login
           </button>
@@ -74,6 +80,7 @@ function Login() {
             <input className="block w-full h-12 px-3 rounded-lg" value={signupEmail} onChange={onChangeSignupEmail} placeholder="이메일 주소"></input>
             <input
               className="block w-full mt-3 p-3 rounded-lg"
+              type="password"
               value={signupPassword}
               onChange={onChangeSignupPassword}
               placeholder="비밀번호"
