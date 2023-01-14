@@ -1,12 +1,12 @@
 import React from 'react';
 import Button from '../atomic/Button';
 import { useInput } from '../hooks/useInput';
-import useCreate from '../react-query/useCreate';
+import { useCreate } from '../react-query/useCreate';
 
 function CreateTodoForm() {
   const { value: title, onChange: onChangeTitle, onInitial: onInitialTitle } = useInput();
   const { value: content, onChange: onChangeContent, onInitial: onInitialContent } = useInput();
-  const { createTodo } = useCreate({
+  const { mutate: createTodo } = useCreate({
     onSuccess: () => {
       onInitialTitle();
       onInitialContent();
