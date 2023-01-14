@@ -1,6 +1,5 @@
-import { isLogin } from '../utils/auth';
+import {ReactElement, useEffect} from 'react';
 import { useRouter } from 'next/router';
-import { useEffect } from 'react';
 import TodoList from '../components/TodoList';
 import CreateTodoForm from '../components/CreateTodoForm';
 import { useRecoilState } from 'recoil';
@@ -8,8 +7,9 @@ import { detailState } from '../recoil/atoms/state';
 import { useDelete } from '../react-query/useDelete';
 import useGet from '../react-query/useGet';
 import EditTodoForm from '../components/EditTodoForm';
-import Title from '../components/Title';
+import Header from '../components/Header';
 import Button from '../atomic/Button';
+import { isLogin } from '../utils/auth';
 import dayjs from 'dayjs';
 import styles from '../styles/Home.module.css';
 
@@ -35,8 +35,7 @@ export default function TodoDetail() {
   }, []);
 
   return (
-    <div className={styles.main}>
-      <Title />
+    <>
       {todo.id && state === 'read' && (
         <div className="m-5">
           <div className={'flex flex-row-reverse'}>마지막 수정일: {dayjs(todo.updatedAt).format('YYYY/MM/DD')}</div>
@@ -59,6 +58,16 @@ export default function TodoDetail() {
       <TodoList />
 
       {state === 'read' && <CreateTodoForm />}
-    </div>
+    </>
   );
 }
+
+TodoDetail.getLayout = function getLayout(page: ReactElement) {
+  return (
+    <div className={styles.main}>
+      <Header />
+      <>{page}</>
+    </div>
+  )
+}
+
