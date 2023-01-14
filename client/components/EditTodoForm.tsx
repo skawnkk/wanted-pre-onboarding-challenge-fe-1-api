@@ -4,13 +4,13 @@ import Button from '../atomic/Button';
 import { useInput } from '../hooks/useInput';
 import { todo } from '../pages/api/todo';
 import useUpdate from '../react-query/useUpdate';
-import { detailState } from '../recoil/atoms/state';
+import {detailStateAtom, POST_STATE} from '../recoil/atoms/state';
 
 interface IEditTodoForm {
   todo: todo;
 }
 function EditTodoForm({ todo }: IEditTodoForm) {
-  const setState = useSetRecoilState(detailState);
+  const setState = useSetRecoilState(detailStateAtom);
   const { value: editTitle, onChange: onEditTitleChange, onInitial: onInitialEditTitle } = useInput(todo.title);
   const { value: editContents, onChange: onEditContentsChange, onInitial: onInitialEditContents } = useInput(todo.content);
   const { updateTodo } = useUpdate({ id: todo.id, onSuccess: () => setState('read') });
@@ -18,7 +18,7 @@ function EditTodoForm({ todo }: IEditTodoForm) {
   const handleCancel = () => {
     onInitialEditTitle();
     onInitialEditContents();
-    setState('read');
+    setState(POST_STATE.READ);
   };
 
   const handleEditConfirm = () => updateTodo({ title: editTitle, content: editContents });

@@ -1,15 +1,15 @@
-import {ReactElement, useEffect} from 'react';
-import { useRouter } from 'next/router';
+import {ReactElement} from 'react';
+import {useRouter} from 'next/router';
 import TodoList from '../components/TodoList';
 import CreateTodoForm from '../components/CreateTodoForm';
-import { useRecoilState } from 'recoil';
-import { detailState } from '../recoil/atoms/state';
-import { useDelete } from '../react-query/useDelete';
+import {useRecoilState} from 'recoil';
+import {detailStateAtom, POST_STATE} from '../recoil/atoms/state';
+import {useDelete} from '../react-query/useDelete';
 import useGet from '../react-query/useGet';
 import EditTodoForm from '../components/EditTodoForm';
 import Header from '../components/Header';
 import Button from '../atomic/Button';
-import {isLogin, isLoginOnServer} from '../utils/auth';
+import {isLoginOnServer} from '../utils/auth';
 import dayjs from 'dayjs';
 import styles from '../styles/Home.module.css';
 import {GetServerSidePropsContext} from "next";
@@ -22,22 +22,15 @@ export default function TodoDetail() {
   const [state, setState] = useRecoilState(detailStateAtom);
   const { mutate : deleteTodo } = useDelete(() => router.push('/'));
 
-  const handleEditClick = () => setState('edit');
+  const handleEditClick = () => setState(POST_STATE.EDIT);
   const handleDeleteClick = () => {
     deleteTodo(id);
     router.push('/');
   };
 
-  useEffect(() => {
-    if (!isLogin()) {
-      router.push('/auth');
-      return;
-    }
-  }, []);
-
   return (
     <>
-      {todo.id && state === 'read' && (
+      {todo.id && state === POST_STATE.READ && (
         <div className="m-5">
           <div className={'flex flex-row-reverse'}>마지막 수정일: {dayjs(todo.updatedAt).format('YYYY/MM/DD')}</div>
 
@@ -54,11 +47,11 @@ export default function TodoDetail() {
         </div>
       )}
 
-      {todo.id && state === 'edit' && <EditTodoForm todo={todo} />}
+      {todo.id && state === POST_STATE.EDIT  && <EditTodoForm todo={todo} />}
 
       <TodoList />
 
-      {state === 'read' && <CreateTodoForm />}
+      {state === POST_STATE.READ && <CreateTodoForm />}
     </>
   );
 }
