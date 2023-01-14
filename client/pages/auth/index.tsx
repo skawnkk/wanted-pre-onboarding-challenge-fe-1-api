@@ -1,9 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import React, {ReactElement, useState} from 'react';
 import { useRouter } from 'next/router';
 import { useInput } from '../../hooks/useInput';
-import { isLogin, validateAuthInput } from '../../utils/auth';
+import {isLoginOnServer, TOKEN_KEY, validateAuthInput} from '../../utils/auth';
 import Auth from '../api/auth';
 import { AxiosResponse } from 'axios';
+import {setCookie} from "cookies-next";
+import Header from "../../components/Header";
+import {GetServerSidePropsContext} from "next";
 
 function Login() {
   const router = useRouter();
@@ -19,8 +22,12 @@ function Login() {
 
   const onAfterAuth = (res: AxiosResponse) => {
     const { token } = res.data;
-    localStorage.setItem('token', token);
+    setCookie(TOKEN_KEY, token)
     router.push('/');
+  };
+
+  const onError = (errorInfo: string) => {
+    setLoginMessage(errorInfo);
   };
 
   const handleLogin = (e: React.FormEvent) => {
@@ -29,7 +36,7 @@ function Login() {
     const message = validateAuthInput({ email: loginEmail, password: loginPassword });
     if (message) setLoginMessage(message);
 
-    Auth.login({ email: loginEmail, password: loginPassword }, onAfterAuth);
+    Auth.login({ email: loginEmail, password: loginPassword }, onAfterAuth, onError);
   };
 
   const handleSignup = (e: React.FormEvent) => {
@@ -40,51 +47,57 @@ function Login() {
       setSignupMessage(message);
       return;
     }
-    Auth.signup({ email: signupEmail, password: signupPassword }, onAfterAuth);
+    Auth.signup({ email: signupEmail, password: signupPassword }, onAfterAuth, onError);
   };
 
   const handleSignupClick = () => setIsSignup(true);
-
-  useEffect(() => {
-    if (isLogin()) {
-      router.push('/');
-    }
-  }, []);
 
   return (
     <div className={'p-5'}>
       <section>
         <div className={'mb-1'}>Login</div>
         <form onSubmit={handleLogin}>
-          <input className="block w-full h-12 px-3 rounded-lg" value={loginEmail} onChange={onChangeLoginEmail} placeholder="이메일 주소"></input>
+          <input
+            className="block w-full h-12 px-3 rounded-lg"
+            value={loginEmail}
+            onChange={onChangeLoginEmail}
+            placeholder="이메일 주소"
+          />
           <input
             className="block w-full mt-3 p-3 rounded-lg"
             type="password"
             value={loginPassword}
             onChange={onChangeLoginPassword}
             placeholder="비밀번호"
-          ></input>
+          />
           <button className="btn-default" type="submit">
             Login
           </button>
           <p>{loginMessage}</p>
         </form>
       </section>
-      <div className="my-3 border-t-4 border-indigo-600"></div>
+
+      <div className="my-3 border-t-4 border-indigo-600"/>
+
       <section>
         <div className={'mb-1'} onClick={handleSignupClick}>
           Signup click!
         </div>
         {isSignup && (
           <form onSubmit={handleSignup}>
-            <input className="block w-full h-12 px-3 rounded-lg" value={signupEmail} onChange={onChangeSignupEmail} placeholder="이메일 주소"></input>
+            <input
+              className="block w-full h-12 px-3 rounded-lg"
+              value={signupEmail}
+              onChange={onChangeSignupEmail}
+              placeholder="이메일 주소"
+            />
             <input
               className="block w-full mt-3 p-3 rounded-lg"
               type="password"
               value={signupPassword}
               onChange={onChangeSignupPassword}
               placeholder="비밀번호"
-            ></input>
+            />
             <button className="btn-default" type="submit">
               Signup
             </button>
@@ -97,3 +110,29 @@ function Login() {
 }
 
 export default Login;
+
+export const getServerSideProps = async(ctx: GetServerSidePropsContext) =>{
+ const isLogin = isLoginOnServer(ctx)
+
+  if(isLogin){
+   return {
+     redirect:{
+       permanent: false,
+       destination: '/'
+     }
+   }
+ }
+
+ return {
+   props: {}
+ }
+}
+
+Login.getLayout = function getLayout(page: ReactElement) {
+  return (
+    <div>
+      <Header />
+      <>{page}</>
+    </div>
+  )
+}

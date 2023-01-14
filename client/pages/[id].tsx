@@ -9,9 +9,10 @@ import useGet from '../react-query/useGet';
 import EditTodoForm from '../components/EditTodoForm';
 import Header from '../components/Header';
 import Button from '../atomic/Button';
-import { isLogin } from '../utils/auth';
+import {isLogin, isLoginOnServer} from '../utils/auth';
 import dayjs from 'dayjs';
 import styles from '../styles/Home.module.css';
+import {GetServerSidePropsContext} from "next";
 
 export default function TodoDetail() {
   const router = useRouter();
@@ -60,6 +61,23 @@ export default function TodoDetail() {
       {state === 'read' && <CreateTodoForm />}
     </>
   );
+}
+
+export const getServerSideProps = async(ctx:GetServerSidePropsContext)=>{
+  const isLogin = isLoginOnServer(ctx)
+
+  if(!isLogin){
+    return {
+      redirect: {
+        permanent: false,
+        destination: '/auth',
+      }
+    }
+  }
+
+  return {
+    props:{}
+  }
 }
 
 TodoDetail.getLayout = function getLayout(page: ReactElement) {

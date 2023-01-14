@@ -1,26 +1,48 @@
-import { isLogin } from '../utils/auth';
-import { useRouter } from 'next/router';
-import { useEffect } from 'react';
+import {ReactElement} from 'react';
+import {GetServerSidePropsContext} from "next";
 import TodoList from '../components/TodoList';
 import CreateTodoForm from '../components/CreateTodoForm';
-import Title from '../components/Title';
+import Header from '../components/Header';
 import styles from '../styles/Home.module.css';
+import {isLoginOnServer} from "../utils/auth";
 
-export default function Home() {
-  const router = useRouter();
-
-  useEffect(() => {
-    if (!isLogin()) {
-      router.push('/auth');
-      return;
-    }
-  }, []);
-
+function Home() {
   return (
-    <div className={styles.main}>
-      <Title />
+    <>
       <TodoList />
       <CreateTodoForm />
-    </div>
+    </>
   );
 }
+
+
+export const getServerSideProps = async(ctx:GetServerSidePropsContext)=>{
+  const isLogin = isLoginOnServer(ctx)
+
+  if(!isLogin){
+    return {
+      redirect: {
+        permanent: false,
+        destination: '/auth',
+      }
+    }
+  }
+
+  return {
+    props: {}
+  }
+}
+
+Home.getLayout = function getLayout(page: ReactElement) {
+  return (
+    <div className={styles.main}>
+      <Header />
+      <>{page}</>
+    </div>
+  )
+}
+
+
+
+
+export default Home
