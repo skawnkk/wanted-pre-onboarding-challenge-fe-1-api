@@ -4,15 +4,15 @@ import Todo, { CreateTodo } from '../pages/api/todo';
 interface UseCreate {
   onSuccess: () => void;
 }
-const useCreate = ({ onSuccess }: UseCreate) => {
+
+export const useCreate = ({ onSuccess }: UseCreate) => {
   const queryClient = useQueryClient();
-  const { mutate: createTodo } = useMutation(({ title, content }: CreateTodo) => Todo.createTodo({ title, content }), {
+  const { mutate } = useMutation(({ title, content }: CreateTodo) => Todo.createTodo({ title, content }), {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['getTodos'] });
       onSuccess();
     },
   });
-  return { createTodo };
+  return { mutate };
 };
 
-export default useCreate;

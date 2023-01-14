@@ -1,9 +1,8 @@
 import { useQuery } from 'react-query';
 import Todo, { todo } from '../pages/api/todo';
 
-const useGetAll = () => {
-  const { data: list = [] } = useQuery<todo[]>(['getTodos'], Todo.getTodos);
-  return list;
+export const useGetAll = () => {
+  const { data = [] } = useQuery<todo[]>(['getTodos'], Todo.getTodos);
+  return data;
 };
 
-export default useGetAll;

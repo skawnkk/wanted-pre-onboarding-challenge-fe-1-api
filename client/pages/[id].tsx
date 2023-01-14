@@ -19,8 +19,8 @@ export default function TodoDetail() {
   const id = router.query.id as string;
   const todo = useGet({ id, onError: () => router.push('/') });
 
-  const [state, setState] = useRecoilState(detailState);
-  const { deleteTodo } = useDelete({ onError: () => router.push('/') });
+  const [state, setState] = useRecoilState(detailStateAtom);
+  const { mutate : deleteTodo } = useDelete(() => router.push('/'));
 
   const handleEditClick = () => setState('edit');
   const handleDeleteClick = () => {

@@ -1,4 +1,3 @@
-import React from 'react';
 import { useMutation, useQueryClient } from 'react-query';
 import Todo from '../pages/api/todo';
 
@@ -13,7 +12,7 @@ interface UseUpdateParam {
 const useUpdate = ({ id, onSuccess }: UseUpdate) => {
   const queryClient = useQueryClient();
 
-  const { mutate: updateTodo } = useMutation(({ title, content }: UseUpdateParam) => Todo.updateTodo({ id, title, content }), {
+  const { mutate } = useMutation(({ title, content }: UseUpdateParam) => Todo.updateTodo({ id, title, content }), {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['getTodos'] });
       queryClient.invalidateQueries({ queryKey: ['getTodo', id] });
@@ -21,7 +20,7 @@ const useUpdate = ({ id, onSuccess }: UseUpdate) => {
     },
   });
 
-  return { updateTodo };
+  return { mutate };
 };
 
 export default useUpdate;
