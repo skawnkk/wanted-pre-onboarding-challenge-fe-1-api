@@ -1,10 +1,20 @@
 import { emailValidate, passwordValidate } from './validate';
+import {getCookie} from "cookies-next";
+export const TOKEN_KEY = 'todo_token'
 
-const isLogin = () => {
-  if (typeof window !== 'undefined') {
-    return Boolean(localStorage.getItem('token')) || false;
+export const getToken = () => {
+  return getCookie(TOKEN_KEY)??'';
+}
+
+export const isLogin = () => {
+  if(typeof window !== undefined) {
+    return Boolean(getCookie(TOKEN_KEY));
   }
-  return false;
+  return true;
+}
+
+export const isLoginOnServer = (ctx:any) => {
+  return Boolean(getCookie(TOKEN_KEY, ctx));
 };
 
 interface AuthInput {
@@ -12,7 +22,7 @@ interface AuthInput {
   password: string;
 }
 
-const validateAuthInput = ({ email, password }: AuthInput) => {
+export const validateAuthInput = ({ email, password }: AuthInput) => {
   if (!email || !password) {
     return '아이디 또는 비밀번호를 입력해주세요';
   }
@@ -24,5 +34,3 @@ const validateAuthInput = ({ email, password }: AuthInput) => {
   }
   return '';
 };
-
-export { isLogin, validateAuthInput };
