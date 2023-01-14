@@ -1,6 +1,4 @@
-import axios, { AxiosError } from 'axios';
-import { config } from '../../config';
-import { ErrorMessage } from './auth';
+import {api} from "./index";
 
 export interface todo {
   title: string;
@@ -10,20 +8,6 @@ export interface todo {
   updatedAt: string;
 }
 
-async function getTodos() {
-  try {
-    const token = localStorage.getItem('token');
-    if (!token) return [];
-    const { data } = await axios.get(config.server + '/todos', {
-      headers: { Authorization: token },
-    });
-    return data.data;
-  } catch (e) {
-    const { response } = e as unknown as AxiosError;
-    const { details = 'error' } = response?.data as ErrorMessage;
-    throw details;
-  }
-}
 export const todoInitialValue = {
   title: '',
   content: '',
@@ -32,37 +16,25 @@ export const todoInitialValue = {
   updatedAt: '',
 };
 
+
+async function getTodos() {
+  const {data} = await api.get('/todos');
+  return data;
+}
+
 async function getTodoById(id: string) {
-  try {
-    const token = localStorage.getItem('token');
-    if (!token) return todoInitialValue;
-    const { data } = await axios.get(config.server + `/todos/${id}`, {
-      headers: { Authorization: token },
-    });
-    return data.data;
-  } catch (e) {
-    const { response } = e as unknown as AxiosError;
-    const { details = 'error' } = response?.data as ErrorMessage;
-    throw details;
-  }
+  const { data } = await api.get(`/todos/${id}`);
+  return data;
 }
 
 export interface CreateTodo {
   title: string;
   content: string;
 }
-async function createTodo({ title, content }: CreateTodo) {
-  try {
-    const token = localStorage.getItem('token');
-    if (!token) return;
 
-    const result = await axios.post(config.server + '/todos', { title, content }, { headers: { Authorization: token } });
-    return result.data;
-  } catch (e) {
-    const { response } = e as unknown as AxiosError;
-    const { details = 'error' } = response?.data as ErrorMessage;
-    throw details;
-  }
+async function createTodo({ title, content }: CreateTodo) {
+  const {data} = await api.post('/todos', { title, content });
+  return data;
 }
 
 interface UpdateTodo {
@@ -72,32 +44,15 @@ interface UpdateTodo {
 }
 
 async function updateTodo({ id, title, content }: UpdateTodo) {
-  try {
-    const token = localStorage.getItem('token');
-    if (!token) return;
-
-    const result = await axios.put(config.server + `/todos/${id}`, { title, content }, { headers: { Authorization: token } });
-    return result.data;
-  } catch (e) {
-    const { response } = e as unknown as AxiosError;
-    const { details = 'error' } = response?.data as ErrorMessage;
-    throw details;
-  }
+  const {data} = await api.put(`/todos/${id}`, { title, content });
+  return data
 }
 
 async function deleteTodo(id: string) {
-  try {
-    const token = localStorage.getItem('token');
-    if (!token) return;
-
-    const result = await axios.delete(config.server + `/todos/${id}`, { headers: { Authorization: token } });
-    return result.data;
-  } catch (e) {
-    const { response } = e as unknown as AxiosError;
-    const { details = 'error' } = response?.data as ErrorMessage;
-    throw details;
-  }
+  const {data} = await api.delete(`/todos/${id}`);
+  return data
 }
+
 export default {
   getTodos,
   createTodo,
