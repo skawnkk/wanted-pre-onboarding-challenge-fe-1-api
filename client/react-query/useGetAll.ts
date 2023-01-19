@@ -1,8 +1,11 @@
-import { useQuery } from 'react-query';
 import Todo, { todo } from '../pages/api/todo';
+import {useQuery} from "@tanstack/react-query";
 
 export const useGetAll = () => {
-  const { data = [] } = useQuery<todo[]>(['getTodos'], Todo.getTodos);
+  const { data = [] } = useQuery<todo[]>({
+    queryKey:['getTodos'],
+    queryFn:Todo.getTodos
+  });
   return data;
 };
 
