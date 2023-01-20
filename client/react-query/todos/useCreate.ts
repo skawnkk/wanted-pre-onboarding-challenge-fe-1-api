@@ -1,4 +1,4 @@
-import Todo, { CreateTodo } from '../pages/api/todo';
+import Todo, { CreateTodo } from '../../pages/api/todo';
 import {useMutation, useQueryClient} from "@tanstack/react-query";
 import {todoKeys} from "./index";
 

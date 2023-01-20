@@ -1,7 +1,7 @@
 import React from 'react';
 import Button from '../atomic/Button';
 import { useInput } from '../hooks/useInput';
-import { useCreate } from '../react-query/useCreate';
+import { useCreate } from '../react-query/todos/useCreate';
 
 function CreateTodoForm() {
   const { value: title, onChange: onChangeTitle, onInitial: onInitialTitle } = useInput();

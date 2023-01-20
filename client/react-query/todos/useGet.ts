@@ -1,4 +1,4 @@
-import Todo, { todo, todoInitialValue } from '../pages/api/todo';
+import Todo, { todo, todoInitialValue } from '../../pages/api/todo';
 import {useQuery} from "@tanstack/react-query";
 import {todoKeys} from "./index";
 
