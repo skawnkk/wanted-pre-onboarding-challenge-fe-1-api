@@ -1,11 +1,16 @@
 import '../styles/globals.css';
 import type { AppProps } from 'next/app';
 import {RecoilRoot} from 'recoil';
-import {QueryCache, QueryClient, QueryClientProvider} from 'react-query';
+import {
+  QueryCache,
+  QueryClient,
+  QueryClientProvider,
+} from '@tanstack/react-query'
 import {ReactElement, ReactNode} from "react";
 import {NextPage} from "next";
 import {isAxiosError} from "axios";
 import {createStandaloneToast} from '@chakra-ui/react'
+import {ReactQueryDevtools} from "@tanstack/react-query-devtools";
 
 export type NextPageWithLayout<P = {}, IP = P> = NextPage<P, IP> & {
   getLayout?: (page: ReactElement) => ReactNode
@@ -45,6 +50,7 @@ export default function App({ Component, pageProps }: AppPropsWithLayout) {
             <ToastContainer/>
           </>
         )}
+        <ReactQueryDevtools initialIsOpen />
       </QueryClientProvider>
     </RecoilRoot>
   );

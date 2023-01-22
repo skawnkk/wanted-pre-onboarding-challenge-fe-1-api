@@ -1,8 +1,8 @@
 import React from 'react';
 import { useRouter } from 'next/router';
 import { todo } from '../pages/api/todo';
-import { useDelete } from '../react-query/useDelete';
-import { useGetAll } from '../react-query/useGetAll';
+import { useDelete } from '../react-query/todos/useDelete';
+import { useGetAll } from '../react-query/todos/useGetAll';
 
 function TodoList() {
   const router = useRouter();

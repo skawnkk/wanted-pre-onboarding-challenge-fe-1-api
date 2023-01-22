@@ -3,7 +3,7 @@ import {useSetRecoilState} from 'recoil';
 import Button from '../atomic/Button';
 import {useInput} from '../hooks/useInput';
 import {todo} from '../pages/api/todo';
-import useUpdate from '../react-query/useUpdate';
+import useUpdate from '../react-query/todos/useUpdate';
 import {detailStateAtom, POST_STATE} from '../recoil/atoms/state';
 
 interface IEditTodoForm {
