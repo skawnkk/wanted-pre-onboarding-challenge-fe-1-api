@@ -1,5 +1,6 @@
-import Todo from '../pages/api/todo';
+import Todo from '../../pages/api/todo';
 import {useMutation, useQueryClient} from "@tanstack/react-query";
+import {todoKeys} from "./index";
 
 interface UseUpdate {
   id: string;
@@ -15,8 +16,8 @@ const useUpdate = ({ id, onSuccess }: UseUpdate) => {
   const { mutate } = useMutation({
     mutationFn: ({ title, content }: UseUpdateParam) => Todo.updateTodo({ id, title, content }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['getTodos'] });
-      queryClient.invalidateQueries({ queryKey: ['getTodo', id] });
+      queryClient.invalidateQueries({ queryKey: todoKeys.all});
+      queryClient.invalidateQueries({ queryKey: todoKeys.detail(id) });
       onSuccess();
     },
   });
