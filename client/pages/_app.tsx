@@ -13,6 +13,9 @@ import {isAxiosError} from "axios";
 import {createStandaloneToast} from '@chakra-ui/react'
 import {ReactQueryDevtools} from "@tanstack/react-query-devtools";
 import GlobalErrorBoundary from "../src/components/error/GlobalErrorBoundary";
+import { ChakraBaseProvider, extendBaseTheme } from '@chakra-ui/react';
+import chakraTheme from '@chakra-ui/theme'
+import ErrorFallback from "../src/components/error/ErrorFallback";
 
 export type NextPageWithLayout<P = {}, IP = P> = NextPage<P, IP> & {
   getLayout?: (page: ReactElement) => ReactNode
@@ -22,13 +25,12 @@ type AppPropsWithLayout = AppProps & {
   Component: NextPageWithLayout
 }
 
-const {ToastContainer, toast} = createStandaloneToast();
-
-function queryErrorHandler(error: string): void {
-  const id = 'react-query-error';
-  toast.closeAll();
-  toast({ id, title:error, status: 'error', variant: 'subtle', isClosable: true, position:'top'});
-}
+const { Spinner } = chakraTheme.components
+const theme = extendBaseTheme({
+  components: {
+    Spinner,
+  },
+})
 
 export default function App({ Component, pageProps }: AppPropsWithLayout) {
   const queryClient = new QueryClient({
@@ -50,29 +52,25 @@ export default function App({ Component, pageProps }: AppPropsWithLayout) {
 
   return (
     <RecoilRoot>
-      <QueryClientProvider client={queryClient}>
-        <QueryErrorResetBoundary>
-          {({ reset }) => (
-            <GlobalErrorBoundary
-              //onReset={reset}
-              // fallbackRender={({ resetErrorBoundary }) => (
-              //   <div>
-              //     There was an error!
-              //     <Button onClick={() => resetErrorBoundary()}>Try again</Button>
-              //   </div>
-              // )}
-            >
-              {getLayout(
-                <>
+      <ChakraBaseProvider theme={theme}>
+        <QueryClientProvider client={queryClient}>
+          <QueryErrorResetBoundary>
+            {({ reset }) => (
+              <GlobalErrorBoundary
+                onReset={reset}
+                fallbackRender={({ resetErrorBoundary }) => (
+                  <ErrorFallback onReset={resetErrorBoundary} message={'global'}/>
+                )}
+              >
+                {getLayout(
                   <Component {...pageProps} />
-                  {/*<ToastContainer/>*/}
-                </>
-              )}
-            </GlobalErrorBoundary>
-          )}
-        </QueryErrorResetBoundary>
-        <ReactQueryDevtools initialIsOpen />
-      </QueryClientProvider>
+                )}
+              </GlobalErrorBoundary>
+            )}
+          </QueryErrorResetBoundary>
+          <ReactQueryDevtools initialIsOpen />
+        </QueryClientProvider>
+      </ChakraBaseProvider>
     </RecoilRoot>
   );
 }
