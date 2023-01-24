@@ -2,15 +2,17 @@ import '../styles/globals.css';
 import type { AppProps } from 'next/app';
 import {RecoilRoot} from 'recoil';
 import {
-  QueryCache,
   QueryClient,
   QueryClientProvider,
+  QueryErrorResetBoundary,
 } from '@tanstack/react-query'
-import {ReactElement, ReactNode} from "react";
+import React, {ReactElement, ReactNode, Suspense} from "react";
 import {NextPage} from "next";
-import {isAxiosError} from "axios";
-import {createStandaloneToast} from '@chakra-ui/react'
 import {ReactQueryDevtools} from "@tanstack/react-query-devtools";
+import GlobalErrorBoundary from "../src/components/error/GlobalErrorBoundary";
+import { ChakraBaseProvider, extendBaseTheme } from '@chakra-ui/react';
+import chakraTheme from '@chakra-ui/theme'
+import ErrorFallback from "../src/components/error/ErrorFallback";
 
 export type NextPageWithLayout<P = {}, IP = P> = NextPage<P, IP> & {
   getLayout?: (page: ReactElement) => ReactNode
@@ -20,38 +22,45 @@ type AppPropsWithLayout = AppProps & {
   Component: NextPageWithLayout
 }
 
-const {ToastContainer, toast} = createStandaloneToast();
-
-function queryErrorHandler(error: string): void {
-  const id = 'react-query-error';
-  toast.closeAll();
-  toast({ id, title:error, status: 'error', variant: 'subtle', isClosable: true, position:'top'});
-}
+const { Spinner } = chakraTheme.components
+const theme = extendBaseTheme({
+  components: {
+    Spinner,
+  },
+})
 
 export default function App({ Component, pageProps }: AppPropsWithLayout) {
   const queryClient = new QueryClient({
-    queryCache: new QueryCache({
-      onError: (error) => {
-        if (isAxiosError(error)) {
-          queryErrorHandler(error.response?.data.details || error.message)
-        }
-      }
-    })
-  });
+    defaultOptions: {
+      queries: {
+        useErrorBoundary: true,
+      },
+    },
+  })
 
   const getLayout = Component.getLayout ?? ((page) => page)
 
   return (
     <RecoilRoot>
-      <QueryClientProvider client={queryClient}>
-        {getLayout(
-          <>
-            <Component {...pageProps} />
-            <ToastContainer/>
-          </>
-        )}
-        <ReactQueryDevtools initialIsOpen />
-      </QueryClientProvider>
+      <ChakraBaseProvider theme={theme}>
+        <QueryClientProvider client={queryClient}>
+          <QueryErrorResetBoundary>
+            {({ reset }) => (
+              <GlobalErrorBoundary
+                onReset={reset}
+                fallbackRender={({ resetErrorBoundary }) => (
+                  <ErrorFallback onReset={resetErrorBoundary} message={'global'}/>
+                )}
+              >
+                {getLayout(
+                  <Component {...pageProps} />
+                )}
+              </GlobalErrorBoundary>
+            )}
+          </QueryErrorResetBoundary>
+          <ReactQueryDevtools initialIsOpen />
+        </QueryClientProvider>
+      </ChakraBaseProvider>
     </RecoilRoot>
   );
 }

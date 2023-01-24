@@ -10,6 +10,7 @@ function Header() {
     deleteCookie(TOKEN_KEY)
     router.push('/auth')
   };
+  const routeMainPage = () => router.push('/')
 
   useEffect(()=>{
     setIsUserLogin(isLogin())
@@ -17,7 +18,7 @@ function Header() {
 
   return (
     <div className={'flex h-[80px] justify-between'}>
-      <p className={`text-slate-900 font-extrabold text-4xl`}>TodoChallenge</p>
+      <p className={`text-slate-900 font-extrabold text-4xl`} onClick={routeMainPage}>TodoChallenge</p>
       {isUserLogin && <button className={'p-2 h-min border border-slate-600'} onClick={handleClickLogout}>logout</button>}
     </div>
   );
