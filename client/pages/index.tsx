@@ -1,10 +1,13 @@
-import {ReactElement} from 'react';
+import React, {ReactElement} from 'react';
 import {GetServerSidePropsContext} from "next";
-import TodoList from '../components/TodoList';
-import CreateTodoForm from '../components/CreateTodoForm';
+import dynamic from "next/dynamic";
 import Header from '../components/Header';
 import styles from '../styles/Home.module.css';
 import {isLoginOnServer} from "../utils/auth";
+import LoadingSpinner from '../src/components/loading/Spinner';
+import CreateTodoForm from '../components/CreateTodoForm';
+
+const TodoList = dynamic(()=>import('../components/TodoList'),{ssr:false, loading:()=><LoadingSpinner/>});
 
 function Home() {
   return (

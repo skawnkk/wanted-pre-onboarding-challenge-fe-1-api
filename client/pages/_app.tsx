@@ -2,15 +2,12 @@ import '../styles/globals.css';
 import type { AppProps } from 'next/app';
 import {RecoilRoot} from 'recoil';
 import {
-  QueryCache,
   QueryClient,
   QueryClientProvider,
-  QueryErrorResetBoundary, useQueryErrorResetBoundary,
+  QueryErrorResetBoundary,
 } from '@tanstack/react-query'
-import {ReactElement, ReactNode} from "react";
+import React, {ReactElement, ReactNode, Suspense} from "react";
 import {NextPage} from "next";
-import {isAxiosError} from "axios";
-import {createStandaloneToast} from '@chakra-ui/react'
 import {ReactQueryDevtools} from "@tanstack/react-query-devtools";
 import GlobalErrorBoundary from "../src/components/error/GlobalErrorBoundary";
 import { ChakraBaseProvider, extendBaseTheme } from '@chakra-ui/react';
@@ -37,16 +34,9 @@ export default function App({ Component, pageProps }: AppPropsWithLayout) {
     defaultOptions: {
       queries: {
         useErrorBoundary: true,
-        suspense: true,
-      }
+      },
     },
   })
-
-  // onError: (error) => {
-  //   if (isAxiosError(error)) {
-  //     queryErrorHandler(error.response?.data.details || error.message)
-  //   }
-  // }
 
   const getLayout = Component.getLayout ?? ((page) => page)
 
