@@ -1,6 +1,12 @@
 import { emailValidate, passwordValidate } from './validate';
 import {getCookie} from "cookies-next";
+import {GetServerSidePropsContext} from "next";
 export const TOKEN_KEY = 'todo_token'
+
+
+export const getServerSideToken = (ctx: GetServerSidePropsContext) => {
+  return getCookie(TOKEN_KEY, ctx)??'';
+}
 
 export const getToken = () => {
   return getCookie(TOKEN_KEY)??'';
@@ -14,7 +20,10 @@ export const isLogin = () => {
 }
 
 export const isLoginOnServer = (ctx:any) => {
-  return Boolean(getCookie(TOKEN_KEY, ctx));
+  return {
+    token: getServerSideToken(ctx),
+    isLogin: Boolean(getCookie(TOKEN_KEY, ctx))
+  }
 };
 
 interface AuthInput {

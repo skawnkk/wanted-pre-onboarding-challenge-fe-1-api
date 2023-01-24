@@ -17,8 +17,7 @@ function Home() {
 
 
 export const getServerSideProps = async(ctx:GetServerSidePropsContext)=>{
-  const isLogin = isLoginOnServer(ctx)
-
+  const {isLogin} = isLoginOnServer(ctx)
   if(!isLogin){
     return {
       redirect: {
@@ -41,8 +40,5 @@ Home.getLayout = function getLayout(page: ReactElement) {
     </div>
   )
 }
-
-
-
 
 export default Home

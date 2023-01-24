@@ -11,4 +11,9 @@ api.interceptors.response.use(
   },
   (error) => {
     return Promise.reject(error);
-  })
+  }
+)
+
+export const setAxiosToken = (token:string) => {
+  api.defaults.headers.Authorization = token
+}
