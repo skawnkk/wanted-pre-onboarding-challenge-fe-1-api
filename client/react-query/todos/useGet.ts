@@ -6,10 +6,14 @@ interface UseGet {
   id: string;
   onError: () => void;
 }
+
 const useGet = ({ id, onError }: UseGet) => {
-  const { data: todo = todoInitialValue } = useQuery<todo>(todoKeys.detail(id), () => Todo.getTodoById(id), {
+  const { data: todo = todoInitialValue } = useQuery<todo>({
+    queryKey:todoKeys.detail(id),
+    queryFn:() => Todo.getTodoById(id),
     onError,
   });
+
   return todo;
 };
 
